@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conexión SQL Server con Power BI</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: #0a0f1e;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .infografia {
+    width: 700px;
+    background: linear-gradient(180deg, #0d1a35 0%, #0a1628 40%, #061020 100%);
+    color: #e8edf8;
+    padding: 0 0 40px 0;
+    border: 1px solid #1e3a5f;
+    box-shadow: 0 0 60px rgba(0,120,255,0.15);
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #0f2a5e 0%, #1a4080 50%, #0f2a5e 100%);
+    padding: 36px 40px 28px;
+    text-align: center;
+    border-bottom: 3px solid #2563b0;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at center, rgba(37,99,176,0.2) 0%, transparent 60%);
+  }
+  .header h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #fff;
+    text-transform: uppercase;
+    position: relative;
+  }
+  .header .subtitle {
+    margin-top: 10px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 6px 24px;
+    display: inline-block;
+    font-size: 0.82rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #93b8e8;
+    position: relative;
+  }
+
+  /* LOGOS CONNECTOR */
+  .connector-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: #0b1a30;
+    padding: 18px 40px;
+    border-bottom: 1px solid #1a3055;
+  }
+  .logo-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(37,99,176,0.2);
+    border: 1px solid #2563b0;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #7eb8f7;
+  }
+  .logo-badge .icon { font-size: 1.4rem; }
+  .arrow-connector {
+    font-size: 1.6rem;
+    color: #2563b0;
+    font-weight: bold;
+  }
+
+  /* MAIN GRID */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding: 0 30px;
+    margin-top: 28px;
+  }
+
+  .section {
+    padding: 18px 16px;
+  }
+
+  .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #93b8e8;
+    border-bottom: 1px solid #1e3a5f;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+
+  .section p {
+    font-size: 0.84rem;
+    line-height: 1.6;
+    color: #b8cce8;
+  }
+
+  /* QUÉ ES */
+  .que-es {
+    background: rgba(37,99,176,0.08);
+    border: 1px solid #1e3a5f;
+    border-radius: 10px;
+    margin: 0 30px;
+    padding: 20px 24px;
+  }
+  .que-es .section-title { color: #7eb8f7; font-size: 1.1rem; }
+  .que-es p { font-size: 0.88rem; }
+
+  /* STEPS / FASES */
+  .fases {
+    margin: 24px 30px 0;
+  }
+  .fases .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #93b8e8;
+    border-bottom: 1px solid #1e3a5f;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+  }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    background: rgba(14,30,60,0.6);
+    border-left: 3px solid #2563b0;
+    border-radius: 0 8px 8px 0;
+  }
+  .step-check {
+    width: 26px; height: 26px;
+    background: #2563b0;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    font-weight: 700;
+    color: #fff;
+  }
+  .step-text {
+    font-size: 0.84rem;
+    color: #b8cce8;
+    line-height: 1.5;
+  }
+  .step-text strong {
+    display: block;
+    color: #e0ecff;
+    font-size: 0.88rem;
+    margin-bottom: 2px;
+  }
+
+  /* CASO PRÁCTICO */
+  .caso-container {
+    margin: 24px 30px 0;
+    background: linear-gradient(135deg, #0d2040 0%, #152d55 100%);
+    border: 1px solid #2563b0;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .caso-header {
+    background: #2563b0;
+    padding: 10px 20px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+    font-weight: 700;
+  }
+  .caso-body {
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .caso-body p { font-size: 0.83rem; color: #b8cce8; line-height: 1.55; }
+  .caso-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #7eb8f7;
+    margin-bottom: 6px;
+  }
+
+  /* BOTTOM SECTIONS */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 30px 0;
+  }
+  .card {
+    background: rgba(14,30,60,0.7);
+    border: 1px solid #1e3a5f;
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .card .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #93b8e8;
+    border-bottom: 1px solid #1e3a5f;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+  .card p { font-size: 0.82rem; color: #b8cce8; line-height: 1.55; }
+
+  /* CONCLUSION */
+  .conclusion {
+    margin: 24px 30px 0;
+    background: rgba(37,99,176,0.12);
+    border: 1px solid #2563b0;
+    border-radius: 10px;
+    padding: 18px 22px;
+  }
+  .conclusion .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #7eb8f7;
+    font-weight: 700;
+    border-bottom: 1px solid #2563b0;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+  .conclusion p { font-size: 0.84rem; color: #b8cce8; line-height: 1.6; }
+
+  /* FOOTER */
+  .footer {
+    margin-top: 32px;
+    background: linear-gradient(90deg, #0f2a5e, #1a4080, #0f2a5e);
+    padding: 14px 40px;
+    text-align: center;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #93b8e8;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #2563b0, transparent);
+    margin: 20px 30px;
+  }
+</style>
+</head>
+<body>
+<div class="infografia">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Conexión SQL Server<br>con Power BI</h1>
+    <div class="subtitle">Integración de datos para inteligencia de negocio</div>
+  </div>
+
+  <!-- LOGOS BAR -->
+  <div class="connector-bar">
+    <div class="logo-badge"><span class="icon">🗄️</span> SQL Server</div>
+    <div class="arrow-connector">⟶ ⟶ ⟶</div>
+    <div class="logo-badge"><span class="icon">📊</span> Power BI</div>
+  </div>
+
+  <!-- QUÉ ES -->
+  <div style="margin: 24px 30px 0;">
+    <div class="que-es">
+      <div class="section-title">¿Qué es la conexión SQL Server – Power BI?</div>
+      <p>Es la integración entre el motor de base de datos relacional de Microsoft (SQL Server) y la plataforma de visualización Power BI, permitiendo importar, transformar y visualizar datos empresariales en tiempo real o de forma programada, para apoyar la toma de decisiones estratégicas.</p>
+    </div>
+  </div>
+
+  <!-- MAIN GRID: PASOS + PARA QUÉ SIRVE -->
+  <div class="main-grid" style="margin-top: 24px;">
+    <!-- izquierda vacía, se usa fases abajo -->
+    <div class="section">
+      <div class="section-title">¿Para qué sirve?</div>
+      <p>Permite centralizar datos operativos almacenados en SQL Server y transformarlos en dashboards interactivos dentro de Power BI. La conexión habilita reportes dinámicos, análisis ad-hoc y monitoreo de KPIs en tiempo real, eliminando la necesidad de exportaciones manuales y reduciendo el tiempo de generación de informes.</p>
+    </div>
+    <div class="section">
+      <div class="section-title">Consideraciones clave</div>
+      <p>Es fundamental definir el modo de conexión adecuado (Import o DirectQuery), gestionar los permisos de acceso al servidor y optimizar las consultas SQL para no sobrecargar el motor. También se debe programar actualizaciones periódicas y documentar las fuentes de datos para garantizar la gobernanza y la trazabilidad de la información.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- FASES / PASOS -->
+  <div class="fases">
+    <div class="section-title">Pasos para realizar la conexión</div>
+
+    <div class="step">
+      <div class="step-check">1</div>
+      <div class="step-text"><strong>Abrir Power BI Desktop y seleccionar origen de datos</strong>Ir a Inicio → Obtener datos → SQL Server. Ingresar el nombre del servidor y, opcionalmente, la base de datos.</div>
+    </div>
+
+    <div class="step">
+      <div class="step-check">2</div>
+      <div class="step-text"><strong>Elegir el modo de conectividad</strong>Seleccionar Import (carga los datos en Power BI) o DirectQuery (consulta el servidor en tiempo real). DirectQuery requiere una conexión estable y es ideal para datos que cambian con frecuencia.</div>
+    </div>
+
+    <div class="step">
+      <div class="step-check">3</div>
+      <div class="step-text"><strong>Autenticación y credenciales</strong>Utilizar Windows Authentication (entorno corporativo) o SQL Server Authentication con usuario y contraseña. Verificar que el usuario tenga permisos de lectura sobre las tablas o vistas necesarias.</div>
+    </div>
+
+    <div class="step">
+      <div class="step-check">4</div>
+      <div class="step-text"><strong>Selección de tablas y transformación en Power Query</strong>Seleccionar las tablas, vistas o escribir una consulta SQL personalizada. Usar Power Query para limpiar, filtrar y transformar los datos antes de cargarlos al modelo.</div>
+    </div>
+
+    <div class="step">
+      <div class="step-check">5</div>
+      <div class="step-text"><strong>Modelado de datos y relaciones</strong>Definir relaciones entre tablas en la vista de Modelo. Crear medidas DAX para calcular KPIs como ventas totales, variación porcentual o promedios móviles.</div>
+    </div>
+
+    <div class="step">
+      <div class="step-check">6</div>
+      <div class="step-text"><strong>Publicación y actualización programada</strong>Publicar el reporte en Power BI Service. Configurar una puerta de enlace de datos (On-premises Data Gateway) para programar actualizaciones automáticas desde SQL Server.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- CASO PRÁCTICO -->
+  <div class="caso-container">
+    <div class="caso-header">Caso Práctico</div>
+    <div class="caso-body">
+      <div>
+        <div class="caso-label">Situación</div>
+        <p>Una empresa minorista almacena sus transacciones de venta en SQL Server pero genera reportes de forma manual en Excel, lo que provoca demoras de varios días y errores de consolidación al cierre de cada mes.</p>
+      </div>
+      <div>
+        <div class="caso-label">Objetivo</div>
+        <p>Conectar Power BI directamente a la base de datos SQL Server para automatizar los reportes de ventas, reducir el tiempo de generación a minutos y permitir el análisis en tiempo real por región, producto y canal de venta.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANÁLISIS + APLICACIÓN -->
+  <div class="bottom-grid">
+    <div class="card">
+      <div class="section-title">Análisis de datos</div>
+      <p>Se conectan las tablas de ventas, productos, clientes y regiones desde SQL Server. Se aplican consultas SQL optimizadas para extraer solo los campos necesarios. Power Query realiza la limpieza de nulos y duplicados. Luego se identifican tendencias de ventas por período, productos con menor rotación y regiones con bajo desempeño.</p>
+    </div>
+    <div class="card">
+      <div class="section-title">Aplicación de la conexión</div>
+      <p>Se configura DirectQuery para mantener los datos actualizados. Se crean medidas DAX como Ventas YTD, % de variación mensual y Margen neto. Los dashboards permiten filtrar por fecha, categoría y región. Los resultados se publican en Power BI Service y se comparten con gerencia para apoyar decisiones comerciales basadas en evidencia.</p>
+    </div>
+  </div>
+
+  <!-- IMPACTO + CONCLUSIÓN -->
+  <div class="bottom-grid" style="margin-top: 16px;">
+    <div class="card">
+      <div class="section-title">Impacto en el negocio</div>
+      <p>La integración de SQL Server con Power BI reduce el tiempo de generación de reportes de días a minutos, elimina errores manuales y democratiza el acceso a la información. La organización puede detectar oportunidades de mejora en tiempo real, optimizar el inventario y diseñar estrategias comerciales basadas en datos confiables.</p>
+    </div>
+    <div class="card">
+      <div class="section-title">Modos de conexión</div>
+      <p><strong style="color:#7eb8f7;">Import:</strong> Carga una copia de los datos. Mayor velocidad de visualización, ideal para datos históricos.</p>
+      <p style="margin-top:8px;"><strong style="color:#7eb8f7;">DirectQuery:</strong> Consulta en tiempo real. Ideal para datos que cambian constantemente, sin límite de volumen.</p>
+      <p style="margin-top:8px;"><strong style="color:#7eb8f7;">Live Connection:</strong> Para Analysis Services o Power BI datasets compartidos.</p>
+    </div>
+  </div>
+
+  <!-- CONCLUSIÓN -->
+  <div class="conclusion">
+    <div class="section-title">Conclusión</div>
+    <p>La conexión entre SQL Server y Power BI transforma datos operativos en inteligencia de negocio accionable. Su implementación correcta, con el modo de conexión adecuado, buenas prácticas de modelado DAX y actualización programada, permite a las organizaciones tomar decisiones más rápidas, precisas y basadas en evidencia, fortaleciendo su competitividad en el mercado.</p>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">Presentado por Andres Rodriguez &nbsp;|&nbsp; Análisis de Datos</div>
+
+</div>
+</body>
+</html>
